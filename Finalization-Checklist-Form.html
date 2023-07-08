@@ -1,0 +1,289 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Email Checklist</title>
+<style>
+body {
+text-align: center;
+font-family: sans-serif;
+font-size: 16px;
+color: #222222;
+width: 100%;
+padding: 50px 0px 70px;
+}
+#runActionButton,
+#copyButton,
+#resetButton {
+  background-color: #0F9A56;
+  color: white;
+  font-size: 20px;
+  margin: 15px;
+  padding: 15px 40px;
+  border: none;
+  cursor: pointer;
+}
+
+#runActionButton:hover {
+  background-color: #0B7742;
+  transition-timing-function: ease-in-out;
+}
+
+#copyButton {
+  background-color: black;
+}
+
+#copyButton:hover {
+  background-color: #9A0E8A;
+  transition-timing-function: ease-in-out;
+}
+
+#resetButton {
+  background-color: #E8E8E8;
+  color: #0F9A56;
+}
+
+#resetButton:hover {
+  background-color: #DDF2E7;
+  color: #0F9A56;
+  transition-timing-function: ease-in-out;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
+#resultsBox {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-top: 20px;
+  max-width: 100%;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+}
+
+.checklistSearchResults {
+  max-width: 650px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.airtableSearchResults {
+  max-width: 650px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.placeholder {
+  font-family: courier, serif;
+  color: #868686;
+  font-size: 14px;
+  text-align: left;
+}
+
+.results-placeholder {
+  font-family: serif;
+  color: #6a6a6a;
+  font-size: 14px;
+  text-align: left;
+}
+
+.pasteInstructions {
+  max-width: 500px;
+  color: #797979;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+.copyInstructions {
+  max-width: 500px;
+  color: #797979;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+.finalInstructions {
+  max-width: 650px;
+  margin: 0 auto;
+  line-height: 1.5;
+  background-color: #EFEFEF;
+}
+
+.aliasInstructions {
+  max-width: 650px;
+  color: #797979;
+  margin: 0 auto;
+  line-height: 1.5;
+  text-align: left;
+  padding-top: 5px;
+}
+
+.closingNote {
+  max-width: 500px;
+  font-size: 23px;
+  color: #797979;
+  margin: 0 auto;
+  line-height: 1.5;
+  padding: 60px 0px 20px;
+}
+
+h1 {
+  margin: 0px 0px 10px;
+  font-size: 45px;
+}
+h4 {
+  margin-top: 50px;
+}
+</style>
+</head>
+<body>
+  <h1>Email Checklist</h1>
+  <div class="pasteInstructions">Please do not run HTML for campaigns including embargoed titles or cover art that has not been released to the public yet.</div>
+  <h2 style="margin: 0 auto; max-width: 655px; padding: 30px 0px 0px; font-size: 17px; text-align: left;">Paste your HTML:</h2>
+  <div class="container">
+    <textarea id="yourTextareaId" rows="7" cols="80" placeholder="Paste your Q&amp;A updated HTML here."></textarea>
+    <div class="button-container">
+      <button id="runActionButton" onclick="findAndReplaceUrls()">Run Checklist</button>
+      <button id="resetButton" onclick="resetChecklist()">Reset Checklist</button>
+    </div>
+  </div>
+  <h2 style="margin: 0 auto; max-width: 655px; padding: 30px 0px 20px; font-size: 17px; text-align: left;">Updated HTML:</h2>
+  <textarea id="resultsField" rows="7" cols="80" placeholder="Run checklist for result." readonly></textarea>
+  <div class="pasteInstructions">S3 images are converted to Cloudfront in the above HTML.</div>
+  <div class="button-container">
+    <button id="copyButton" onclick="copyToClipboard()">Copy HTML</button>
+  </div>
+  <div class="finalInstructions">
+  <p style="margin: 20px 20px 0px; padding: 20px 0px 20px;"><strong>After completing the checklist</strong>: EOA test and Salesforce pre-proof this HTML.</p>
+		</div>
+  <div class="checklistSearchResults">
+    <h2 style="padding: 40px 0px 0px; font-size: 35px; color: #9A0E8A;">Checklist Results</h2>
+    <h4 style="text-align: left;">S3 images converted to Cloudfront:</h4>
+    <div id="resultsBox" class="placeholder">Run checklist for result.</div>
+    <h4 style="text-align: left;">Text-transform: uppercase converted to CAPS:</h4>
+    <div id="capsBox" class="placeholder">Run checklist for result.</div>
+    <h4 style="text-align: left;">Missing Data (##):</h4>
+    <div id="missingDataBox" class="placeholder">Run checklist for result.</div>
+    <h4 style="text-align: left;">&amp; HTML character missing:</h4>
+    <div id="ampBox" class="placeholder">Run checklist for result.</div>
+    <h4 style="text-align: left;">Extra # in URLs:</h4>
+    <div id="extraURLBox" class="placeholder">Run checklist for result.</div>
+    <h4 style="text-align: left;">Empty URLs:</h4>
+    <div id="emptyURLBox" class="placeholder">Run checklist for result.</div>
+    <h4 style="text-align: left;">Extra opening spaces in URLs:</h4>
+    <div id="openingSpacesURLBox" class="placeholder">Run checklist for result.</div>
+    <h4 style="text-align: left;">Extra closing spaces in URLs:</h4>
+    <div id="closingSpacesURLBox" class="placeholder">Run checklist for result.</div>
+    <h4 style="text-align: left;">Novel Title still active:</h4>
+    <div id="novelTitleBox" class="placeholder">Run checklist for result.</div>
+    <h4 style="text-align: left;">Author Name still active:</h4>
+    <div id="authorNameBox" class="placeholder">Run checklist for result.</div>
+    <h4 style="text-align: left;">Missing alias on video or banner:</h4>
+    <div id="videoBannerBox" class="placeholder">Run checklist for result.</div>
+    <div class="aliasInstructions" style="padding-top: 15px;">Bnr_CTA_CTA-Text_Description</div>
+	   <div class="aliasInstructions">Bnr_Description</div>
+	   <div class="aliasInstructions">Video_Description</div>
+  </div>
+  <div class="finalInstructions">
+  <p style="margin: 40px 20px 0px; padding: 20px 0px 20px;">If you manually entered data, please make sure all Alias were filled out properly.</p>
+		</div>
+  <div class="airtableSearchResults">
+    <h2 style="padding: 40px 0px 0px; font-size: 35px; color: #087CD8;">Airtable Data</h2>
+    <h4 style="text-align: left;">Video data:</h4>
+    <div id="videoDataBox" class="placeholder">Run checklist for result.</div>
+	   <div class="aliasInstructions">Add the video data to Airtable.</div>
+    <h4 style="text-align: left;">Video count:</h4>
+    <div id="videoCountBox" class="placeholder">Run checklist for result.</div>
+	   <div class="aliasInstructions">Add the video count to Airtable.</div>
+    <h4 style="text-align: left;">Promo banner data:</h4>
+    <div id="promoBannerDataBox" class="placeholder">Run checklist for result.</div>
+	   <div class="aliasInstructions">Mark the corresponding promo banner selection in Airtable.</div>
+    <h4 style="text-align: left;">Books promoted:</h4>
+    <div id="booksDataBox" class="placeholder">Run checklist for result.</div>
+	   <div class="aliasInstructions">Novel Titles and ISBNs promoted.</div>
+    <h4 style="text-align: left;">Modules used:</h4>
+    <div id="modulesDataBox" class="placeholder">Run checklist for result.</div>
+	   <div class="aliasInstructions">Modules included.</div>
+  </div>
+		  <div class="closingNote"><span style="font-size: 20px;">&#x1F596;</span>&#x1F60E;</div>
+  <script>
+    // Get the textarea element
+    var textarea = document.getElementById("yourTextareaId");
+
+    // Get the results field element
+    var resultsField = document.getElementById("resultsField");
+
+    // Get the results box element
+    var resultsBox = document.getElementById("resultsBox");
+
+    // Get the copy button element
+    var copyButton = document.getElementById("copyButton");
+
+    // Get the reset button element
+    var resetButton = document.getElementById("resetButton");
+
+    // Function to perform the desired actions
+    function findAndReplaceUrls() {
+      // Get the content of the textarea
+      var text = textarea.value;
+
+      // Replace occurrences of "https://ss-em.s3.amazonaws.com/" with "https://d1uhdeijel88iv.cloudfront.net/"
+      var replacedText = text.replace(/https:\/\/ss-em\.s3\.amazonaws\.com\//g, "https://d1uhdeijel88iv.cloudfront.net/");
+
+      // Replace occurrences of "http://ss-em.s3.amazonaws.com/" with "https://d1uhdeijel88iv.cloudfront.net/"
+      replacedText = replacedText.replace(/http:\/\/ss-em\.s3\.amazonaws\.com\//g, "https://d1uhdeijel88iv.cloudfront.net/");
+
+      // Set the modified text back to the results field
+      resultsField.value = replacedText;
+
+      // Find the URLs and their replacements
+      var matches = text.match(/(https?:\/\/ss-em\.s3\.amazonaws\.com\/\S+)/g);
+      var foundUrls = matches ? matches.map(function(match) { return match; }) : [];
+
+      // Display the found URLs in the results field
+      var foundUrlsText = foundUrls.join("\n");
+      resultsBox.textContent = foundUrlsText;
+
+      // Find the replace URLs
+      var replaceUrls = foundUrls.map(function(url) { return url.replace("https://ss-em.s3.amazonaws.com/", "https://d1uhdeijel88iv.cloudfront.net/").replace("http://ss-em.s3.amazonaws.com/", "https://d1uhdeijel88iv.cloudfront.net/"); });
+
+      // Display the found URLs and their replacements in the results box
+      var html = "";
+      if (foundUrls.length > 0) {
+        html += "<strong>Found URLs:</strong><br>" + foundUrls.join("<br>") + "<br><br>";
+        html += "<strong>Replace URLs:</strong><br>" + replaceUrls.join("<br>");
+      } else {
+        html = "&#128512; Not found in HTML";
+      }
+      resultsBox.innerHTML = html;
+
+      // Add or remove CSS classes based on the presence or absence of content in the results box
+      if (resultsBox.innerHTML === "") {
+        resultsBox.classList.add("placeholder");
+      } else {
+        resultsBox.classList.remove("placeholder");
+      }
+    }
+
+    // Function to copy the contents of the resultsField to the clipboard
+    function copyToClipboard() {
+      resultsField.select();
+      document.execCommand("copy");
+    }
+
+    // Function to reset the checklist textarea
+    function resetChecklist() {
+      textarea.value = "";
+      resultsField.value = "";
+      resultsBox.textContent = "Run checklist for result.";
+      resultsBox.classList.add("placeholder");
+    }
+  </script>
+</body>
+</html>
